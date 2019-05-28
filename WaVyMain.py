@@ -9,7 +9,7 @@
 # Standard Packages
 from tkinter import Tk, Frame, Menu, Toplevel, Label, IntVar, Button, Radiobutton, Entry, PhotoImage, Text, Scrollbar
 import tkinter.messagebox as msg
-from osgeo import gdal
+import gdal
 import numpy as np
 import scipy as sp
 import sys
