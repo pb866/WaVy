@@ -13,6 +13,10 @@ import gdal
 import numpy as np
 import scipy as sp
 import sys
+# import to get version info
+import tkinter as tk
+import matplotlib
+import spectral
 
 # Local Packages
 import WaVyLib.filesOpen as fil
@@ -234,9 +238,13 @@ class App(Frame):
             print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
 
     def packagesVersions(self):
-        msg.showinfo('Important Packages:',
-                     "GDAL's version is: {} \n {} \n NumPy's version is: {} \n {} \n SciPy's version is: {} \n {}"
-                     .format(gdal.__version__, gdal, np.__version__, np, sp.__version__, sp))
+        msg.showinfo('Version Overview',
+                     "Python version: {}\n\n"
+                     "GDAL: version {}\nNumPy: version {}\nSciPy: version {}\n"
+                     "TkInter: version {}\nSpectral: version {}\n"
+                     "MatPlotLib: version {}"
+                     .format(sys.version, gdal.VersionInfo(), np.__version__, sp.__version__,
+                     tk.TkVersion, spectral.__version__, matplotlib.__version__))
 
     def contact(self):
         msg.showinfo('Contact', 'Kontaktinformationen\ns.b@future.com')

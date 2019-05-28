@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from osgeo import gdal
+import gdal
 import WaVyLib.imageConverter as converter
 
 
