@@ -41,5 +41,7 @@ class StatisticsPlot(converter.ConvertImage):
         plt.plot(bandsStatsMean, label ='Mean')
         plt.plot(bandsStatsMean+bandsStatsStd/2, linestyle = 'dotted', label = '+ Std')
         plt.plot(bandsStatsMean-bandsStatsStd/2, linestyle = 'dotted', label = '- Std')
+        plt.xticks(range(len(band)), band)
+        plt.grid(ls=':')
         plt.legend()
         statsplt = plt.show()

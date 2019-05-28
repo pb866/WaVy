@@ -14,7 +14,7 @@ import numpy as np
 import scipy as sp
 import sys
 # import to get version info
-import tkinter as tk
+import tkinter
 import matplotlib
 import spectral
 
@@ -30,7 +30,10 @@ import WaVyLib.ndviSave as viSave
 # -------------------------------------------------------------------------------
 # Name:        WaVy
 WaVy_version = str(1.0)
-# Author:      Steffen.Balmer / Florian.B.
+# Author:      Steffen.Balmer / Florian.B. / Peter Bräuer
+#
+# Repository:  https://github.com/pb866/WaVy.git
+# published under GNU general public license v3
 #
 # Created:     04.08.2016
 # Copyright:   (c) Steffen.Balmer / Florian.B. 2016
@@ -244,7 +247,7 @@ class App(Frame):
                      "TkInter: version {}\nSpectral: version {}\n"
                      "MatPlotLib: version {}"
                      .format(sys.version, gdal.VersionInfo(), np.__version__, sp.__version__,
-                     tk.TkVersion, spectral.__version__, matplotlib.__version__))
+                     tkinter.TkVersion, spectral.__version__, matplotlib.__version__))
 
     def contact(self):
         msg.showinfo('Contact', 'Kontaktinformationen\ns.b@future.com')
