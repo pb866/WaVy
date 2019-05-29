@@ -37,6 +37,9 @@ WaVy_version = str(1.0)
 #
 # Created:     04.08.2016
 # Copyright:   (c) Steffen.Balmer / Florian.B. 2016
+# Last Modified: 28.05.2019 by Peter Bräuer
+#                - Update to Python 3.7.3
+#                - Beautifications
 # -------------------------------------------------------------------------------
 #
 # TODO
