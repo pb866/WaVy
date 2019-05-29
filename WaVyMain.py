@@ -15,8 +15,11 @@ import scipy as sp
 import sys
 # import to get version info
 import tkinter
-import matplotlib
 import spectral
+# Plotting with TkInter
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
 
 # Local Packages
 import WaVyLib.filesOpen as fil
@@ -126,7 +129,7 @@ class App(Frame):
 
         Frame4 = Frame(self.parent)
         self.statusbar = Label(Frame4,
-                               text='Kontaktinfos, WaVy Version: ' + WaVy_version,
+                               text='s.b@future.com, WaVy Version: ' + WaVy_version,
                                bd=1,
                                relief='sunken',
                                anchor='w')
@@ -201,7 +204,7 @@ class App(Frame):
         frameCoords2 = Frame(self.coords)
         frameCoords2.pack(side="bottom")
 
-        Label(frameCoords1, text='Pixel Coordinates?').grid(row=0, columnspan=2)
+        Label(frameCoords1, text='Pixel Coordinates?').grid(row=0, column=0)
 
         xCoordLabel = Label(frameCoords1, anchor="w", text='Zeile (Y-Koordinate):', width=20)
         xCoordLabel.grid(row=1, column=0)
@@ -216,8 +219,9 @@ class App(Frame):
         self.yCoord.grid(row=2, column=1)
 
         coordsButton = Button(frameCoords2, text='Plot Spectrum', command=self.plotSpecFunc).grid(row=3, column=0)
+        coordsButton = Button(frameCoords2, text='Clear Figure', command=self.clearFig).grid(row=3, column=1)
         coordsExitButton = Button(frameCoords2, text='Exit', command=self.coords.destroy)
-        coordsExitButton.grid(row=3, column=1)
+        coordsExitButton.grid(row=3, column=2)
 
         return self.xCoord, self.yCoord
 
@@ -255,6 +259,10 @@ class App(Frame):
     def contact(self):
         msg.showinfo('Contact', 'Kontaktinformationen\ns.b@future.com')
 
+    def clearFig(self):
+        plt.clf()
+        plt.show()
+
     def clearAll(self):
         self.outputText.delete('1.0', 'end')
 
@@ -277,7 +285,7 @@ class RedirectText:
 def main():
     root = Tk()
     app = App(root)
-    root.mainloop()
+    app.mainloop()
 
 
 if __name__ == '__main__':
