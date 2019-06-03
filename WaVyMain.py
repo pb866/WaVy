@@ -7,7 +7,8 @@
 """
 
 # Standard Packages
-from tkinter import Tk, Frame, Menu, Toplevel, Label, IntVar, Button, Radiobutton, Entry, PhotoImage, Text, Scrollbar
+from tkinter import Tk, Frame, Menu, Toplevel, Label, IntVar, Button, \
+     Radiobutton, Entry, PhotoImage, Text, Scrollbar
 import tkinter.messagebox as msg
 import gdal
 import numpy as np
@@ -18,6 +19,8 @@ import tkinter
 import spectral
 # Plotting with TkInter
 import matplotlib
+# Specify MatPlotLib backend for use with tkinter
+# This prevents crashes, when called from console or IPython
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
@@ -32,7 +35,7 @@ import WaVyLib.ndviSave as viSave
 
 # -------------------------------------------------------------------------------
 # Name:        WaVy
-WaVy_version = str(1.0)
+WaVy_version = "1.1-DEV"
 # Author:      Steffen.Balmer / Florian.B. / Peter Bräuer
 #
 # Repository:  https://github.com/pb866/WaVy.git
@@ -50,7 +53,6 @@ WaVy_version = str(1.0)
 # - ndvi als envi file speichern
 # - ndvi kanäle selbst wählen
 # - pixel nummer kopieren
-# - packagefenster verbessern
 # - exception für int floatr eingaben bei SpectrumPlot
 # -
 # -------------------------------------------------------------------------------
@@ -141,30 +143,38 @@ class App(Frame):
             dsObject = fil.NewFilePath()
             dsObject.openFile()
             self.parent.filePath = dsObject.getDs()
-        except (AttributeError, FileExistsError, FileNotFoundError, ImportError, ValueError) as e:
-            print('ERROR: No ENVI Image File selected!\n\nError description: ', e.args[0], '\n\nPLEASE, try again!')
+
+        except (AttributeError, FileExistsError, FileNotFoundError, ImportError,
+            ValueError) as e:
+            print('ERROR: No ENVI Image File selected!\n\nError description: ',
+                e.args[0], '\n\nPLEASE, try again!')
 
     def getMetaData(self):
         try:
             dsObj = met.MetaData(self.parent.filePath)
             dsObj.showMeta()
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!', flush=True)
+            self.openFile()
 
     def spectralStatistics(self):
         try:
             specStatsObj = pltSta.StatisticsPlot(self.parent.filePath)
             specStatsObj.showStats()
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!', flush=True)
+            self.openFile()
 
     def createImageWindow(self):
         try:
             self.optImagePlot = Toplevel(self)
             self.optImagePlot.title('Plot Image')
             self.optImagePlot.geometry("200x120+10+30")
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError) as attr:
+            print('No ENVI Image File selected!\n\nError description: ',
+                attr.args[0], '\n\nPLEASE, open a  file!')
 
         framePlot1 = Frame(self.optImagePlot, bd=2, relief="groove", padx=3, pady=3)
         framePlot1.pack(side="top")
@@ -179,8 +189,10 @@ class App(Frame):
         vnirOpt = Radiobutton(framePlot1, text="NIR/Red/Green", variable=self.v, value=2)
         vnirOpt.pack()
 
-        plotImageButton = Button(framePlot2, text='Plot Image', command=self.plotImageFunc).pack(side="left")
-        coordsExitButton = Button(framePlot2, text='Exit', command=self.optImagePlot.destroy)
+        plotImageButton = Button(framePlot2, text='Plot Image',
+            command=self.plotImageFunc).pack(side="left")
+        coordsExitButton = Button(framePlot2, text='Exit',
+            command=self.optImagePlot.destroy)
         coordsExitButton.pack(side="left")
         return self.v
 
@@ -189,7 +201,9 @@ class App(Frame):
             plotObj = imgplt.PlotDataset(self.parent.filePath, self.v)
             plotObj.plotImage()
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!')
+            self.openFile()
 
     def createSpecWindow(self):
         try:
@@ -197,7 +211,8 @@ class App(Frame):
             self.coords.title('Plot a spectrum')
             self.coords.geometry("300x110+10+30")
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!')
 
         frameCoords1 = Frame(self.coords, bd=2, relief="groove", padx=3, pady=3)
         frameCoords1.pack(side="top")
@@ -218,8 +233,10 @@ class App(Frame):
         self.yCoord = Entry(frameCoords1)
         self.yCoord.grid(row=2, column=1)
 
-        coordsButton = Button(frameCoords2, text='Plot Spectrum', command=self.plotSpecFunc).grid(row=3, column=0)
-        coordsButton = Button(frameCoords2, text='Clear Figure', command=self.clearFig).grid(row=3, column=1)
+        coordsButton = Button(frameCoords2, text='Plot Spectrum',
+            command=self.plotSpecFunc).grid(row=3, column=0)
+        coordsButton = Button(frameCoords2, text='Clear Figure',
+            command=self.clearFig).grid(row=3, column=1)
         coordsExitButton = Button(frameCoords2, text='Exit', command=self.coords.destroy)
         coordsExitButton.grid(row=3, column=2)
 
@@ -229,15 +246,23 @@ class App(Frame):
         try:
             specObject = pltS.PlotSpectra(self.parent.filePath, self.xCoord, self.yCoord)
             specObject.plotSpec()
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError) as attr:
+            print('No ENVI Image File selected!\n\nError description: ',
+                attr.args[0], '\n\nPLEASE, open a  file!')
+            self.openFile()
+        except IndexError as ind:
+            self.meta = met.MetaData(self.parent.filePath)
+            print("Out of bounds. Choose pixels between 0 and {}/{} for x/y, respectively"
+            .format(self.meta.ds.RasterXSize, self.meta.ds.RasterYSize))
 
     def showNDVI(self):
         try:
             ndviObj = vi.NDVI(self.parent.filePath)
             ndviObj.calcNDVI()
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!')
+            self.openFile()
 
     def saveNDVI(self):
         try:
@@ -245,7 +270,9 @@ class App(Frame):
             ndviSaveObj.writeNDVI()
             print('NDVI image saved!')
         except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ', err.args[0], '\n\nPLEASE, open a  file!')
+            print('No ENVI Image File selected!\n\nError description: ',
+                err.args[0], '\n\nPLEASE, open a  file!')
+            self.openFile()
 
     def packagesVersions(self):
         msg.showinfo('Version Overview',

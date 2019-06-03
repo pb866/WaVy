@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import gdal
 from tkinter.filedialog import askopenfilename
+import os.path
 
 
 class NewFilePath:
@@ -11,7 +12,8 @@ class NewFilePath:
 
     def openFile(self):
          self.ds = self.getFilePath()
-         print('The image {} is loaded successfully'.format(self.ds.GetDescription()))
+         self.fname = os.path.basename(self.ds.GetDescription())
+         print('The image {} was loaded successfully'.format(self.fname))
 
     def getDs(self):
         return self.ds
