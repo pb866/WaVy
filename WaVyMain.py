@@ -69,6 +69,7 @@ class App(Frame):
 
         self.redir = RedirectText(self.outputText)
         sys.stdout = self.redir
+        sys.stderr = self.redir
 
     def initUI(self):
         self.parent.title("WaVy - Remote Sensing Software")
@@ -134,7 +135,7 @@ class App(Frame):
                                text='s.b@future.com, WaVy Version: ' + WaVy_version,
                                bd=1,
                                relief='sunken',
-                               anchor='w')
+                               anchor='w', padx=10, pady=3)
         self.statusbar.pack(side='bottom', fill='x')
         Frame4.pack(fill='x', side='bottom')
 
@@ -252,7 +253,7 @@ class App(Frame):
             self.openFile()
         except IndexError as ind:
             self.meta = met.MetaData(self.parent.filePath)
-            print("Out of bounds. Choose pixels between 0 and {}/{} for x/y, respectively"
+            print("Out of bounds. Choose pixels between y = 0...{1} and x = 0...{0}."
             .format(self.meta.ds.RasterXSize, self.meta.ds.RasterYSize))
 
     def showNDVI(self):
@@ -303,7 +304,7 @@ class RedirectText:
         self.output = text_ctrl
 
     def write(self, string):
-        self.output.insert('end', string)
+        self.output.insert('current', string)
 
     def flush(self):
         pass
