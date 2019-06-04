@@ -46,6 +46,8 @@ WaVy_version = "1.1-DEV"
 # Last Modified: 28.05.2019 by Peter Bräuer
 #                - Update to Python 3.7.3
 #                - Beautifications
+#                - Allow several spectral graphs in one plot with a legend of selected pixels
+#                - Add license info to help menu
 # -------------------------------------------------------------------------------
 #
 # TODO
@@ -108,6 +110,7 @@ class App(Frame):
         helpMenu = Menu(menubar, tearoff=False)
         helpMenu.add_command(label='Used Packages', command=self.packagesVersions)
         helpMenu.add_command(label='Contact', command=self.contact)
+        helpMenu.add_command(label='License', command=self.license)
         menubar.add_cascade(label='Help', menu=helpMenu)
 
         Frame1 = Frame(self.parent)
@@ -132,8 +135,9 @@ class App(Frame):
 
         Frame4 = Frame(self.parent)
         self.statusbar = Label(Frame4,
-                               text='s.b@future.com, WaVy Version: ' + WaVy_version,
-                               bd=1,
+                               text='WaVy – Version ' + WaVy_version +
+                               '\nGitHub: https://github.com/pb866/WaVy.git',
+                               justify='left', bd=1,
                                relief='sunken',
                                anchor='w', padx=10, pady=3)
         self.statusbar.pack(side='bottom', fill='x')
@@ -285,7 +289,14 @@ class App(Frame):
                      tkinter.TkVersion, spectral.__version__, matplotlib.__version__))
 
     def contact(self):
-        msg.showinfo('Contact', 'Kontaktinformationen\ns.b@future.com')
+        msg.showinfo('Contact', ('Kontaktinformationen\ns.b@future.com\n\n'
+            'GitHub\nhttps://github.com/pb866/WaVy.git'))
+
+    def license(self):
+        msg.showinfo('License', str('This software is available under the\n' +
+            'GNU General Public License v3.0\n\n' +
+            'You can obtain a license copy at\n' +
+            'https://www.gnu.org/licenses/gpl-3.0.html'))
 
     def clearFig(self):
         plt.clf()
