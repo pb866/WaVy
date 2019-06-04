@@ -150,26 +150,24 @@ class App(Frame):
             self.parent.filePath = dsObject.getDs()
 
         except (AttributeError, FileExistsError, FileNotFoundError, ImportError,
-            ValueError) as e:
-            print('ERROR: No ENVI Image File selected!\n\nError description: ',
-                e.args[0], '\n\nPLEASE, try again!')
+            ValueError):
+            print('No ENVI Image File selected. Please, open a  file!')
+            self.openFile()
 
     def getMetaData(self):
         try:
             dsObj = met.MetaData(self.parent.filePath)
             dsObj.showMeta()
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!', flush=True)
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
 
     def spectralStatistics(self):
         try:
             specStatsObj = pltSta.StatisticsPlot(self.parent.filePath)
             specStatsObj.showStats()
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!', flush=True)
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
 
     def createImageWindow(self):
@@ -177,9 +175,8 @@ class App(Frame):
             self.optImagePlot = Toplevel(self)
             self.optImagePlot.title('Plot Image')
             self.optImagePlot.geometry("200x120+10+30")
-        except (NameError, AttributeError) as attr:
-            print('No ENVI Image File selected!\n\nError description: ',
-                attr.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
 
         framePlot1 = Frame(self.optImagePlot, bd=2, relief="groove", padx=3, pady=3)
         framePlot1.pack(side="top")
@@ -205,9 +202,8 @@ class App(Frame):
         try:
             plotObj = imgplt.PlotDataset(self.parent.filePath, self.v)
             plotObj.plotImage()
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
 
     def createSpecWindow(self):
@@ -215,9 +211,9 @@ class App(Frame):
             self.coords = Toplevel(self)
             self.coords.title('Plot a spectrum')
             self.coords.geometry("300x110+10+30")
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
+            self.openFile()
 
         frameCoords1 = Frame(self.coords, bd=2, relief="groove", padx=3, pady=3)
         frameCoords1.pack(side="top")
@@ -229,13 +225,14 @@ class App(Frame):
         xCoordLabel = Label(frameCoords1, anchor="w", text='Zeile (Y-Koordinate):', width=20)
         xCoordLabel.grid(row=1, column=0)
 
-        self.xCoord = Entry(frameCoords1)
+        vcmd = (self.register(self.validate))
+        self.xCoord = Entry(frameCoords1, validate='all', validatecommand=(vcmd, '%P'))
         self.xCoord.grid(row=1, column=1)
 
         yCoordLabel = Label(frameCoords1, anchor="w", text='Spalte (X-Koordinate):', width=20)
         yCoordLabel.grid(row=2, column=0)
 
-        self.yCoord = Entry(frameCoords1)
+        self.yCoord = Entry(frameCoords1, validate='all', validatecommand=(vcmd, '%P'))
         self.yCoord.grid(row=2, column=1)
 
         coordsButton = Button(frameCoords2, text='Plot Spectrum',
@@ -251,11 +248,10 @@ class App(Frame):
         try:
             specObject = pltS.PlotSpectra(self.parent.filePath, self.xCoord, self.yCoord)
             specObject.plotSpec()
-        except (NameError, AttributeError) as attr:
-            print('No ENVI Image File selected!\n\nError description: ',
-                attr.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
-        except IndexError as ind:
+        except IndexError:
             self.meta = met.MetaData(self.parent.filePath)
             print("Out of bounds. Choose pixels between y = 0...{1} and x = 0...{0}."
             .format(self.meta.ds.RasterXSize, self.meta.ds.RasterYSize))
@@ -264,9 +260,8 @@ class App(Frame):
         try:
             ndviObj = vi.NDVI(self.parent.filePath)
             ndviObj.calcNDVI()
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
 
     def saveNDVI(self):
@@ -274,9 +269,8 @@ class App(Frame):
             ndviSaveObj = viSave.SaveNDVI(self.parent.filePath)
             ndviSaveObj.writeNDVI()
             print('NDVI image saved!')
-        except (NameError, AttributeError) as err:
-            print('No ENVI Image File selected!\n\nError description: ',
-                err.args[0], '\n\nPLEASE, open a  file!')
+        except (NameError, AttributeError):
+            print('No ENVI Image File selected. Please, open a  file!')
             self.openFile()
 
     def packagesVersions(self):
@@ -287,6 +281,13 @@ class App(Frame):
                      "MatPlotLib: version {}"
                      .format(sys.version, gdal.VersionInfo(), np.__version__, sp.__version__,
                      tkinter.TkVersion, spectral.__version__, matplotlib.__version__))
+
+    def validate(self, s):
+        if s.isdigit():
+            return True
+        else:
+            print('Please, enter integer digits only.')
+            return False
 
     def contact(self):
         msg.showinfo('Contact', ('Kontaktinformationen\ns.b@future.com\n\n'
@@ -315,6 +316,7 @@ class RedirectText:
         self.output = text_ctrl
 
     def write(self, string):
+        self.output.update_idletasks()  # Update text windows, import to flush text before opening another window
         self.output.insert('current', string)
 
     def flush(self):
