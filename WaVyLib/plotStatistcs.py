@@ -38,8 +38,12 @@ class StatisticsPlot(converter.ConvertImage):
             bandsStatsStd.append(bandsStats[b][3])
         bandsStatsStd = np.array(bandsStatsStd)
 
+        plt.clf()
         plt.plot(bandsStatsMean, label ='Mean')
         plt.plot(bandsStatsMean+bandsStatsStd/2, linestyle = 'dotted', label = '+ Std')
         plt.plot(bandsStatsMean-bandsStatsStd/2, linestyle = 'dotted', label = '- Std')
+        plt.xticks(range(len(band)), band)
+        plt.xlabel("bands")
+        plt.grid(ls=':')
         plt.legend()
         statsplt = plt.show()
