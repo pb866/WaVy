@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import gdal
 import WaVyLib.imageConverter as converter
+from tkinter import filedialog as fd
 
 
 class SaveNDVI(converter.ConvertImage):
@@ -12,7 +13,8 @@ class SaveNDVI(converter.ConvertImage):
         bands = self.bandsAsNumPy()
         ndvi = (bands['b5']-bands['b3'])/(bands['b5']+bands['b3'])
         driver = gdal.GetDriverByName('GTiff')
-        fname = 'ndvi.tiff'
+        fname = fd.asksaveasfilename(initialdir=".", title="Save NDVI",
+            filetypes=(("tiff", '*.tiff'), ('all file types', '*.*')))
         rows, cols = ndvi.shape
         geo_transform = self.ds.GetGeoTransform()
         proj = self.ds.GetProjection()
