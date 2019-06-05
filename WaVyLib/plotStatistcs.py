@@ -22,9 +22,9 @@ class StatisticsPlot(converter.ConvertImage):
         # the dictionary isn't ordered, thus we have to order is by band names
         bandsStats = collections.OrderedDict(sorted(bandsStats.items()))
 
-        print("The ANOVA statistics for each band are: \n",
+        print(bandsStats,
               'Minimum/Maximum/Mean/Standard deviation per band: \n',
-              bandsStats)
+              "The ANOVA statistics for each band are: \n")
 
         # Mean in one List
         bandsStatsMean = []
@@ -39,9 +39,9 @@ class StatisticsPlot(converter.ConvertImage):
         bandsStatsStd = np.array(bandsStatsStd)
 
         plt.clf()
-        plt.plot(bandsStatsMean, label ='Mean')
-        plt.plot(bandsStatsMean+bandsStatsStd/2, linestyle = 'dotted', label = '+ Std')
-        plt.plot(bandsStatsMean-bandsStatsStd/2, linestyle = 'dotted', label = '- Std')
+        plt.plot(bandsStatsMean, ls = '--', label ='Mean')
+        plt.plot(bandsStatsMean+bandsStatsStd/2, ls = ':', label = '+ Std')
+        plt.plot(bandsStatsMean-bandsStatsStd/2, ls = ':', label = '- Std')
         plt.xticks(range(len(band)), band)
         plt.xlabel("bands")
         plt.grid(ls=':')
