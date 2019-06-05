@@ -43,11 +43,12 @@ WaVy_version = "1.1-DEV"
 #
 # Created:     04.08.2016
 # Copyright:   (c) Steffen.Balmer / Florian.B. 2016
-# Last Modified: 28.05.2019 by Peter Bräuer
+# Last Modified: 06/2019 by Peter Bräuer
 #                - Update to Python 3.7.3
 #                - Beautifications
 #                - Allow several spectral graphs in one plot with a legend of selected pixels
 #                - Add license info to help menu
+#                - Disable Image Menus, when no image file is selected
 # -------------------------------------------------------------------------------
 #
 # TODO
@@ -76,42 +77,42 @@ class App(Frame):
     def initUI(self):
         self.parent.title("WaVy - Remote Sensing Software")
 
-        menubar = Menu(self.parent)
-        self.parent.config(menu=menubar)
+        self.menubar = Menu(self.parent)
+        self.parent.config(menu=self.menubar)
 
-        fileMenu = Menu(menubar, tearoff=False)
+        fileMenu = Menu(self.menubar, tearoff=False)
         fileMenu.add_command(label='Open File', command=self.openFile)
         fileMenu.add_separator()
         fileMenu.add_command(label='Exit', command=self.onExit)
-        menubar.add_cascade(label='File', menu=fileMenu)
+        self.menubar.add_cascade(label='File', menu=fileMenu)
 
-        toolsMenu = Menu(menubar, tearoff=False)
+        toolsMenu = Menu(self.menubar, tearoff=False)
         toolsMenu.add_command(label='Show Metadata', command=self.getMetaData)
         toolsMenu.add_command(label='Spectral Statstics', command=self.spectralStatistics)
         toolsMenu.add_separator()
         toolsMenu.add_command(label='Plot Image', command=self.createImageWindow)
         toolsMenu.add_command(label='Plot Spectrum', command=self.createSpecWindow)
-        menubar.add_cascade(label='Tools', menu=toolsMenu)
+        self.menubar.add_cascade(label='Tools', menu=toolsMenu, state='disabled')
 
-        imageMenu = Menu(menubar, tearoff=False)
+        imageMenu = Menu(self.menubar, tearoff=False)
         imageMenu.add_command(label='Show NDVI', command=self.showNDVI)
         imageMenu.add_command(label='Save NDVI', command=self.saveNDVI)
-        menubar.add_cascade(label='Image', menu=imageMenu)
+        self.menubar.add_cascade(label='Image', menu=imageMenu, state='disabled')
 
-        vectorMenu = Menu(menubar, tearoff=False)
+        vectorMenu = Menu(self.menubar, tearoff=False)
         vectorMenu.add_command(label='Load Cal', command='')
         vectorMenu.add_command(label='Load Val', command='')
-        menubar.add_cascade(label='Vector', menu=vectorMenu)
+        self.menubar.add_cascade(label='Vector', menu=vectorMenu, state='disabled')
 
-        classifyMenu = Menu(menubar, tearoff=False)
+        classifyMenu = Menu(self.menubar, tearoff=False)
         classifyMenu.add_command(label='n-K-Classifier', command='')
-        menubar.add_cascade(label='Classification', menu=classifyMenu)
+        self.menubar.add_cascade(label='Classification', menu=classifyMenu, state='disabled')
 
-        helpMenu = Menu(menubar, tearoff=False)
+        helpMenu = Menu(self.menubar, tearoff=False)
         helpMenu.add_command(label='Used Packages', command=self.packagesVersions)
         helpMenu.add_command(label='Contact', command=self.contact)
         helpMenu.add_command(label='License', command=self.license)
-        menubar.add_cascade(label='Help', menu=helpMenu)
+        self.menubar.add_cascade(label='Help', menu=helpMenu)
 
         Frame1 = Frame(self.parent)
         self.photo = PhotoImage(file='logo.png')
@@ -148,11 +149,13 @@ class App(Frame):
             dsObject = fil.NewFilePath()
             dsObject.openFile()
             self.parent.filePath = dsObject.getDs()
-
         except (AttributeError, FileExistsError, FileNotFoundError, ImportError,
             ValueError):
-            print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
+            print('File does not exist or is corrupted. Please, select an ENVI file.')
+        if self.parent.filePath:
+            self.enableMenu()
+        else:
+            self.disableMenu()
 
     def getMetaData(self):
         try:
@@ -160,7 +163,6 @@ class App(Frame):
             dsObj.showMeta()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
     def spectralStatistics(self):
         try:
@@ -168,7 +170,6 @@ class App(Frame):
             specStatsObj.showStats()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
     def createImageWindow(self):
         try:
@@ -204,7 +205,6 @@ class App(Frame):
             plotObj.plotImage()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
     def createSpecWindow(self):
         try:
@@ -213,7 +213,6 @@ class App(Frame):
             self.coords.geometry("300x110+10+30")
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
         frameCoords1 = Frame(self.coords, bd=2, relief="groove", padx=3, pady=3)
         frameCoords1.pack(side="top")
@@ -250,7 +249,6 @@ class App(Frame):
             specObject.plotSpec()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
         except IndexError:
             self.meta = met.MetaData(self.parent.filePath)
             print("Out of bounds. Choose pixels between y = 0...{1} and x = 0...{0}."
@@ -262,7 +260,6 @@ class App(Frame):
             ndviObj.calcNDVI()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
     def saveNDVI(self):
         try:
@@ -271,7 +268,6 @@ class App(Frame):
             print('NDVI image saved!')
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
-            self.openFile()
 
     def packagesVersions(self):
         msg.showinfo('Version Overview',
@@ -298,6 +294,18 @@ class App(Frame):
             'GNU General Public License v3.0\n\n' +
             'You can obtain a license copy at\n' +
             'https://www.gnu.org/licenses/gpl-3.0.html'))
+
+    def enableMenu(self):
+        self.menubar.entryconfig('Tools', state='normal')
+        self.menubar.entryconfig('Image', state='normal')
+        self.menubar.entryconfig('Vector', state='normal')
+        self.menubar.entryconfig('Classification', state='normal')
+
+    def disableMenu(self):
+        self.menubar.entryconfig('Tools', state='disabled')
+        self.menubar.entryconfig('Image', state='disabled')
+        self.menubar.entryconfig('Vector', state='disabled')
+        self.menubar.entryconfig('Classification', state='disabled')
 
     def clearFig(self):
         plt.clf()
@@ -332,7 +340,7 @@ def main():
 if __name__ == '__main__':
     main()
 
-    ##### um untermenus in der Menubar zugenerieren
+    ##### um untermenus in der self.menubar zugenerieren
     # submenu = Menu(fileMenu)
     # submenu.add_command(label="New feed")
     # submenu.add_command(label="Bookmarks")
