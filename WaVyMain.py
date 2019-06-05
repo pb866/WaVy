@@ -234,10 +234,11 @@ class App(Frame):
         self.yCoord = Entry(frameCoords1, validate='all', validatecommand=(vcmd, '%P'))
         self.yCoord.grid(row=2, column=1)
 
+        specObject = pltS.PlotSpectra(self.parent.filePath, self.xCoord, self.yCoord)
         coordsButton = Button(frameCoords2, text='Plot Spectrum',
             command=self.plotSpecFunc).grid(row=3, column=0)
         coordsButton = Button(frameCoords2, text='Clear Figure',
-            command=self.clearFig).grid(row=3, column=1)
+            command=specObject.clearFig).grid(row=3, column=1)
         coordsExitButton = Button(frameCoords2, text='Exit', command=self.coords.destroy)
         coordsExitButton.grid(row=3, column=2)
 
@@ -251,7 +252,7 @@ class App(Frame):
             print('No ENVI Image File selected. Please, open a  file!')
         except IndexError:
             self.meta = met.MetaData(self.parent.filePath)
-            print("Out of bounds. Choose pixels between y = 0...{1} and x = 0...{0}."
+            print("Out of bounds. Choose pixels in range y = 0...{1} and x = 0...{0}."
             .format(self.meta.ds.RasterXSize, self.meta.ds.RasterYSize))
 
     def showNDVI(self):
@@ -306,10 +307,6 @@ class App(Frame):
         self.menubar.entryconfig('Image', state='disabled')
         self.menubar.entryconfig('Vector', state='disabled')
         self.menubar.entryconfig('Classification', state='disabled')
-
-    def clearFig(self):
-        plt.clf()
-        plt.show()
 
     def clearAll(self):
         self.outputText.delete('1.0', 'end')

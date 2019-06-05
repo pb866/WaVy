@@ -23,3 +23,7 @@ class PlotSpectra(converter.ConvertImage):
         plt.legend()
         # plt.title("Bands at x = {}, y = {}".format(coordX, coordY))
         plt.show()
+
+    def clearFig(self):
+        plt.clf()
+        plt.show()
