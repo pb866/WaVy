@@ -8,7 +8,7 @@
 
 # Standard Packages
 from tkinter import Tk, Frame, Menu, Toplevel, Label, IntVar, Button, \
-     Radiobutton, Entry, PhotoImage, Text, Scrollbar
+     Radiobutton, Entry, PhotoImage, Text, Scrollbar, filedialog
 import tkinter.messagebox as msg
 import gdal
 import numpy as np
@@ -82,6 +82,7 @@ class App(Frame):
 
         fileMenu = Menu(self.menubar, tearoff=False)
         fileMenu.add_command(label='Open File', command=self.openFile)
+        fileMenu.add_command(label='Save Image As...', command=self.saveFig)
         fileMenu.add_separator()
         fileMenu.add_command(label='Exit', command=self.onExit)
         self.menubar.add_cascade(label='File', menu=fileMenu)
@@ -156,6 +157,13 @@ class App(Frame):
             self.enableMenu()
         else:
             self.disableMenu()
+
+    def saveFig(self):
+        fname = filedialog.asksaveasfilename(initialdir=".", title="Save Figure As...",
+            filetypes=(("PDF", '*.pdf'), ("PS", '*.ps'), ("EPS", '*.eps'),
+            ("PNG", '*.png'), ("JPEG", '*.jpg'), ("TIFF", '*.tif'),
+            ('all file types', '*.*')))
+        plt.savefig(fname)
 
     def getMetaData(self):
         try:
