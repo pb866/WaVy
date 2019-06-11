@@ -16,4 +16,4 @@ class NDVI(converter.ConvertImage):
         plt.clf()
         ndviIMG=plt.imshow(ndvi, interpolation='nearest', cmap='RdYlGn', clim=(0.0, 1.0))
         plt.colorbar()
-        plt.show()
+        plt.show(block=False)

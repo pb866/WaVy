@@ -85,7 +85,7 @@ class App(Frame):
         self.fileMenu.add_command(label='Open File', command=self.openFile,
             accelerator='ctrl+o')
         self.fileMenu.add_command(label='Save Image As...', command=self.saveFig,
-            accelerator='ctrl+s')
+            accelerator='ctrl+s', state='disabled')
         self.fileMenu.add_separator()
         self.fileMenu.add_command(label='Quit', command=self.onExit,
             accelerator='ctrl+q')
@@ -237,6 +237,7 @@ class App(Frame):
         try:
             specStatsObj = pltSta.StatisticsPlot(self.parent.filePath)
             specStatsObj.showStats()
+            self.enableFig()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
 
@@ -272,6 +273,7 @@ class App(Frame):
         try:
             plotObj = imgplt.PlotDataset(self.parent.filePath, self.v)
             plotObj.plotImage()
+            self.enableFig()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
 
@@ -317,6 +319,7 @@ class App(Frame):
         try:
             specObject = pltS.PlotSpectra(self.parent.filePath, self.xCoord, self.yCoord)
             specObject.plotSpec()
+            self.enableFig()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
         except IndexError:
@@ -328,6 +331,7 @@ class App(Frame):
         try:
             ndviObj = vi.NDVI(self.parent.filePath)
             ndviObj.calcNDVI()
+            self.enableFig()
         except (NameError, AttributeError):
             print('No ENVI Image File selected. Please, open a  file!')
 
@@ -376,6 +380,13 @@ class App(Frame):
         self.menubar.entryconfig('Image', state='disabled')
         self.menubar.entryconfig('Vector', state='disabled')
         self.menubar.entryconfig('Classification', state='disabled')
+        self.fileMenu.entryconfig('Save Image As...', state='disabled')
+
+    def enableFig(self):
+        self.fileMenu.entryconfig('Save Image As...', state='normal')
+
+    def disableFig(self):
+        pass
 
     def clearAll(self):
         self.outputText.delete('1.0', 'end')

@@ -26,4 +26,4 @@ class PlotSpectra(converter.ConvertImage):
 
     def clearFig(self):
         plt.clf()
-        plt.show()
+        plt.show(block=False)
