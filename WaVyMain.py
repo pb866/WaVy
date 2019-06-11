@@ -35,7 +35,7 @@ import WaVyLib.ndviSave as viSave
 
 # -------------------------------------------------------------------------------
 # Name:        WaVy
-WaVy_version = "1.1-DEV"
+WaVy_version = "1.1"
 # Author:      Steffen.Balmer / Florian.B. / Peter Bräuer
 #
 # Repository:  https://github.com/pb866/WaVy.git
