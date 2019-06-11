@@ -66,6 +66,7 @@ class App(Frame):
         Frame.__init__(self, parent)
         self.parent = parent
         self.initUI()
+        self.add_bindings()
         self.v = int
         self.xCoord = int
         self.yCoord = int
@@ -80,46 +81,59 @@ class App(Frame):
         self.menubar = Menu(self.parent)
         self.parent.config(menu=self.menubar)
 
-        fileMenu = Menu(self.menubar, tearoff=False)
-        fileMenu.add_command(label='Open File', command=self.openFile)
-        fileMenu.add_command(label='Save Image As...', command=self.saveFig)
-        fileMenu.add_separator()
-        fileMenu.add_command(label='Exit', command=self.onExit)
-        self.menubar.add_cascade(label='File', menu=fileMenu)
+        self.fileMenu = Menu(self.menubar, tearoff=False)
+        self.fileMenu.add_command(label='Open File', command=self.openFile,
+            accelerator='ctrl+o')
+        self.fileMenu.add_command(label='Save Image As...', command=self.saveFig,
+            accelerator='ctrl+s')
+        self.fileMenu.add_separator()
+        self.fileMenu.add_command(label='Quit', command=self.onExit,
+            accelerator='ctrl+q')
+        self.menubar.add_cascade(label='File', menu=self.fileMenu)
 
         toolsMenu = Menu(self.menubar, tearoff=False)
-        toolsMenu.add_command(label='Show Metadata', command=self.getMetaData)
-        toolsMenu.add_command(label='Spectral Statstics', command=self.spectralStatistics)
+        toolsMenu.add_command(label='Show Metadata', command=self.getMetaData,
+            accelerator='ctrl+m')
+        toolsMenu.add_command(label='Spectral Statstics', command=self.spectralStatistics,
+            accelerator='ctrl+alt+s')
         toolsMenu.add_separator()
-        toolsMenu.add_command(label='Plot Image', command=self.createImageWindow)
-        toolsMenu.add_command(label='Plot Spectrum', command=self.createSpecWindow)
+        toolsMenu.add_command(label='Plot Image', command=self.createImageWindow,
+            accelerator='ctrl+i')
+        toolsMenu.add_command(label='Plot Spectrum', command=self.createSpecWindow,
+            accelerator='ctrl+p')
         self.menubar.add_cascade(label='Tools', menu=toolsMenu, state='disabled')
 
         imageMenu = Menu(self.menubar, tearoff=False)
-        imageMenu.add_command(label='Show NDVI', command=self.showNDVI)
-        imageMenu.add_command(label='Save NDVI', command=self.saveNDVI)
+        imageMenu.add_command(label='Show NDVI', command=self.showNDVI,
+            accelerator='ctrl+n')
+        imageMenu.add_command(label='Export NDVI', command=self.saveNDVI,
+            accelerator='ctrl+e')
         self.menubar.add_cascade(label='Image', menu=imageMenu, state='disabled')
 
         vectorMenu = Menu(self.menubar, tearoff=False)
-        vectorMenu.add_command(label='Load Cal', command='')
-        vectorMenu.add_command(label='Load Val', command='')
+        vectorMenu.add_command(label='Load Cal', command='', accelerator='ctrl+alt+c')
+        vectorMenu.add_command(label='Load Val', command='', accelerator='ctrl+alt+v')
         self.menubar.add_cascade(label='Vector', menu=vectorMenu, state='disabled')
 
         classifyMenu = Menu(self.menubar, tearoff=False)
-        classifyMenu.add_command(label='n-K-Classifier', command='')
+        classifyMenu.add_command(label='n-K-Classifier', command='',
+            accelerator='ctrl+c')
         self.menubar.add_cascade(label='Classification', menu=classifyMenu, state='disabled')
 
         helpMenu = Menu(self.menubar, tearoff=False)
-        helpMenu.add_command(label='Used Packages', command=self.packagesVersions)
-        helpMenu.add_command(label='Contact', command=self.contact)
-        helpMenu.add_command(label='License', command=self.license)
+        helpMenu.add_command(label='Used Packages', command=self.packagesVersions,
+            accelerator='ctrl+alt+p')
+        helpMenu.add_command(label='Contact Info', command=self.contact,
+            accelerator='ctrl+alt+i')
+        helpMenu.add_command(label='License', command=self.license,
+            accelerator='ctrl+l')
         self.menubar.add_cascade(label='Help', menu=helpMenu)
 
         Frame1 = Frame(self.parent)
-        self.photo = PhotoImage(file='logo.png')
+        self.photo = PhotoImage(file='WaVyLogo.png')
         self.label = Label(Frame1, image=self.photo)
-        self.label.pack()
-        Frame1.pack(side='top', fill='x')
+        self.label.pack(padx=0, pady=0)
+        Frame1.pack(side='top', fill='x', padx=0, pady=0)
 
         Frame2 = Frame(self.parent)
         self.outputText = Text(Frame2, width=50, height=20, wrap="word", )
@@ -145,18 +159,65 @@ class App(Frame):
         self.statusbar.pack(side='bottom', fill='x')
         Frame4.pack(fill='x', side='bottom')
 
+    def add_bindings(self):
+        # self.bind_all('<Key>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-o>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-s>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-q>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-m>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-s>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-i>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-p>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-n>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-e>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-Alt-c>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-Alt-v>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-c>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-Alt-p>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-Alt-i>', self.keyboard_shortcuts, add=False)
+        self.bind_all('<Control-l>', self.keyboard_shortcuts, add=False)
+
     def openFile(self):
-        try:
-            dsObject = fil.NewFilePath()
-            dsObject.openFile()
-            self.parent.filePath = dsObject.getDs()
-        except (AttributeError, FileExistsError, FileNotFoundError, ImportError,
-            ValueError):
-            print('File does not exist or is corrupted. Please, select an ENVI file.')
+        dsObject = fil.NewFilePath()
+        dsObject.openFile()
+        self.parent.filePath = dsObject.getDs()
         if self.parent.filePath:
             self.enableMenu()
         else:
             self.disableMenu()
+
+    def keyboard_shortcuts(self, event):
+        if event.state==4 and event.keysym=='o':
+            self.openFile()
+        elif event.state==4 and event.keysym=='s':
+            self.saveFig()
+        elif event.state==4 and event.keysym=='q':
+            self.onExit()
+        elif event.state==4 and event.keysym=='m':
+            self.getMetaData()
+        elif event.state==20 and event.keysym=='s':
+            self.spectralStatistics()
+        elif event.state==4 and event.keysym=='i':
+            self.createImageWindow()
+        elif event.state==4 and event.keysym=='p':
+            self.createSpecWindow()
+        elif event.state==4 and event.keysym=='n':
+            self.showNDVI()
+        elif event.state==4 and event.keysym=='e':
+            self.saveNDVI()
+        elif event.state==20 and event.keysym=='c':
+            pass
+        elif event.state==20 and event.keysym=='v':
+            pass
+        elif event.state==4 and event.keysym=='c':
+            pass
+        elif event.state==20 and event.keysym=='p':
+            self.packagesVersions()
+        elif event.state==20 and event.keysym=='i':
+            self.contact()
+        elif event.state==4 and event.keysym=='l':
+            self.license()
+
 
     def saveFig(self):
         fname = filedialog.asksaveasfilename(initialdir=".", title="Save Figure As...",
@@ -346,8 +407,8 @@ if __name__ == '__main__':
     main()
 
     ##### um untermenus in der self.menubar zugenerieren
-    # submenu = Menu(fileMenu)
+    # submenu = Menu(self.fileMenu)
     # submenu.add_command(label="New feed")
     # submenu.add_command(label="Bookmarks")
     # submenu.add_command(label="Mail")
-    # fileMenu.add_cascade(label='Import', menu=submenu, underline=0)
+    # self.fileMenu.add_cascade(label='Import', menu=submenu, underline=0)
