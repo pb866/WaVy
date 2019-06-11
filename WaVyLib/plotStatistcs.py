@@ -46,4 +46,4 @@ class StatisticsPlot(converter.ConvertImage):
         plt.xlabel("bands")
         plt.grid(ls=':')
         plt.legend()
-        statsplt = plt.show()
+        plt.show(block=False)
